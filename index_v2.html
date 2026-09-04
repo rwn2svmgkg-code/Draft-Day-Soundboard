@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#050914">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Draft Room">
+<title>Draft Room Soundboard</title>
+<style>
+:root{--bg:#050914;--panel:#111827;--panel2:#182235;--text:#f8fafc;--muted:#94a3b8;--gold:#f4b942;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:radial-gradient(circle at top,#13223b 0,#050914 38%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+body{min-height:100vh;padding:calc(env(safe-area-inset-top) + 8px) 0 calc(env(safe-area-inset-bottom) + 14px)}
+.wrap{padding:14px;max-width:760px;margin:auto}
+h1{font-size:29px;margin:2px 0 3px;letter-spacing:-.04em}.sub{color:var(--muted);font-size:13px;line-height:1.35}
+.status{display:flex;gap:8px;margin:14px 0 12px;flex-wrap:wrap}.pill{border:1px solid #334155;background:#0f172a;color:#fff;border-radius:999px;padding:9px 11px;font-size:12px;font-weight:700}
+.section{margin:18px 2px 8px;font-size:12px;font-weight:900;letter-spacing:.13em;color:#cbd5e1;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{min-height:112px;border:1px solid #334155;border-radius:18px;padding:15px;text-align:left;color:#fff;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 10px 25px rgba(0,0,0,.28);touch-action:manipulation}
+.btn:active{transform:scale(.98);filter:brightness(1.15)}
+.icon{font-size:30px;display:block;margin-bottom:8px}.title{font-weight:950;font-size:18px;line-height:1.05;display:block}.desc{font-size:12px;color:var(--muted);margin-top:5px;display:block}
+.gold{border-color:#91680d}.red{border-color:#881e1e}.blue{border-color:#1d4ed8}.purple{border-color:#5b21b6}.full{grid-column:1/-1;min-height:84px}
+.overlay{position:fixed;inset:0;background:rgba(1,4,12,.97);display:none;align-items:center;justify-content:center;text-align:center;padding:24px;z-index:99}
+.overlay.show{display:flex}.ovsmall{font-size:18px;color:var(--gold);font-weight:950;letter-spacing:.15em}.ovbig{font-size:min(15vw,74px);font-weight:1000;line-height:.96;margin-top:12px}.ovsub{font-size:20px;color:#d1d5db;margin-top:15px}
+.note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Draft Room Soundboard</h1>
+<div class="sub">Cinematic stings + spoken draft alerts. Tap Enable Audio once.</div>
+<div class="status">
+<button id="enableBtn" class="pill" onclick="enableAudio()">🔊 Enable Audio</button>
+<button class="pill" onclick="speak('Draft room audio check')">🎙 Voice Test</button>
+<div class="pill" id="status">Audio locked</div>
+</div>
+
+<div class="section">Draft events</div>
+<div class="grid">
+<button class="btn gold" onclick="fire('pick','THE PICK IS IN','Draft selection submitted','The pick is in')"><span class="icon">🔔</span><span class="title">Pick Is In</span><span class="desc">Reveal sting + voice</span></button>
+<button class="btn blue" onclick="fire('firstqb','FIRST QB OFF THE BOARD','Quarterback market is officially open','First quarterback off the board')"><span class="icon">🏈</span><span class="title">First QB Taken</span><span class="desc">Big opening-position sting</span></button>
+
+<button class="btn purple" onclick="fire('run','QB RUN','Quarterbacks are flying off the board','Q B run')"><span class="icon">⚡</span><span class="title">QB Run</span><span class="desc">Voice says “QB run”</span></button>
+<button class="btn purple" onclick="fire('run','RB RUN','Running backs are flying off the board','R B run')"><span class="icon">⚡</span><span class="title">RB Run</span><span class="desc">Voice says “RB run”</span></button>
+<button class="btn purple" onclick="fire('run','WR RUN','Wide receivers are flying off the board','W R run')"><span class="icon">⚡</span><span class="title">WR Run</span><span class="desc">Voice says “WR run”</span></button>
+<button class="btn purple" onclick="fire('run','TE RUN','Tight ends are flying off the board','T E run')"><span class="icon">⚡</span><span class="title">TE Run</span><span class="desc">Voice says “TE run”</span></button>
+<button class="btn purple" onclick="fire('run','KICKER RUN','Kickers are coming off the board','Kicker run')"><span class="icon">🦵</span><span class="title">Kicker Run</span><span class="desc">Voice says “Kicker run”</span></button>
+<button class="btn purple" onclick="fire('run','D/ST RUN','Defenses are coming off the board','Defense run')"><span class="icon">🛡️</span><span class="title">D/ST Run</span><span class="desc">Voice says “Defense run”</span></button>
+
+<button class="btn gold" onclick="fire('round','ROUND COMPLETE','Next round loading','Round complete')"><span class="icon">🏁</span><span class="title">Round Complete</span><span class="desc">Broadcast transition sting</span></button>
+<button class="btn red" onclick="fire('trade','TRADE ALERT','Breaking news from the war room','Trade alert')"><span class="icon">🚨</span><span class="title">Trade Alert</span><span class="desc">Urgent siren + voice</span></button>
+</div>
+
+<div class="section">Crowd reactions</div>
+<div class="grid">
+<button class="btn" onclick="fire('applause','APPLAUSE','','')"><span class="icon">👏</span><span class="title">Applause</span><span class="desc">Longer crowd-style clap burst</span></button>
+<button class="btn" onclick="fire('boo','BOOOOO','','')"><span class="icon">👎</span><span class="title">Boo</span><span class="desc">Low crowd groan</span></button>
+<button class="btn" onclick="fire('horn','AIR HORN','','')"><span class="icon">📣</span><span class="title">Air Horn</span><span class="desc">Louder dual-tone blast</span></button>
+<button class="btn" onclick="fire('warning','CLOCK WARNING','','Ten seconds')"><span class="icon">⏰</span><span class="title">Clock Warning</span><span class="desc">Alarm + “Ten seconds”</span></button>
+</div>
+
+<div class="section">Custom cue</div>
+<div class="grid">
+<button class="btn full" onclick="customCue()"><span class="icon">📰</span><span class="title">Custom War Room Alert</span><span class="desc">Type anything and the phone announces it</span></button>
+</div>
+<div class="note">Uses iPhone’s built-in voice for spoken alerts. Turn media volume up before draft time.</div>
+</div>
+
+<div id="overlay" class="overlay" onclick="hideOverlay()">
+<div><div class="ovsmall">WAR ROOM ALERT</div><div id="ovbig" class="ovbig"></div><div id="ovsub" class="ovsub"></div></div>
+</div>
+
+<script>
+let ctx=null,enabled=false;
+
+function enableAudio(){
+  if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();
+  if(ctx.state==='suspended')ctx.resume();
+  enabled=true;
+  document.getElementById('status').textContent='Audio ready';
+  document.getElementById('enableBtn').textContent='✅ Audio Enabled';
+  cinematicRise();
+}
+
+function osc(freq,start,dur,type='sine',gain=.12,slideTo=null){
+  if(!enabled)return;
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.type=type;o.frequency.setValueAtTime(freq,ctx.currentTime+start);
+  if(slideTo)o.frequency.exponentialRampToValueAtTime(slideTo,ctx.currentTime+start+dur);
+  g.gain.setValueAtTime(.0001,ctx.currentTime+start);
+  g.gain.exponentialRampToValueAtTime(gain,ctx.currentTime+start+.015);
+  g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+start+dur);
+  o.connect(g).connect(ctx.destination);o.start(ctx.currentTime+start);o.stop(ctx.currentTime+start+dur+.03);
+}
+
+function noise(start,dur=.2,gain=.07,filter=1200){
+  if(!enabled)return;
+  const n=Math.floor(ctx.sampleRate*dur),b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);
+  for(let i=0;i<n;i++)d[i]=Math.random()*2-1;
+  const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();
+  f.type='bandpass';f.frequency.value=filter;s.buffer=b;
+  g.gain.setValueAtTime(gain,ctx.currentTime+start);
+  g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+start+dur);
+  s.connect(f).connect(g).connect(ctx.destination);s.start(ctx.currentTime+start);
+}
+
+function cinematicRise(){
+  osc(180,0,.22,'sawtooth',.055,360);
+  osc(360,.16,.22,'triangle',.07,720);
+  osc(720,.34,.28,'triangle',.09,1100);
+  noise(.45,.12,.035,2300);
+}
+
+function play(k){
+  if(!enabled){alert('Tap Enable Audio first.');return}
+  if(k==='pick'){
+    osc(196,0,.18,'sine',.11);osc(392,.10,.20,'triangle',.12);osc(784,.27,.30,'triangle',.16);noise(.24,.18,.045,1800);
+  }
+  if(k==='firstqb'){
+    osc(98,0,.34,'sine',.16,130);noise(.12,.16,.06,900);osc(392,.28,.18,'sawtooth',.12);osc(523,.42,.18,'sawtooth',.13);osc(784,.58,.30,'triangle',.17);
+  }
+  if(k==='run'){
+    osc(220,0,.16,'square',.08,330);osc(330,.11,.16,'square',.09,495);osc(495,.22,.18,'square',.10,740);noise(.32,.13,.05,2200);
+  }
+  if(k==='round'){
+    osc(262,0,.15,'triangle',.10);osc(330,.13,.15,'triangle',.11);osc(392,.26,.15,'triangle',.12);osc(523,.39,.28,'triangle',.15);
+  }
+  if(k==='trade'){
+    for(let i=0;i<3;i++){osc(660,i*.22,.14,'square',.12);osc(440,i*.22+.08,.14,'square',.11)}
+    noise(.05,.65,.05,1200);
+  }
+  if(k==='applause'){
+    for(let i=0;i<18;i++)noise(i*.055,.11,.04+Math.random()*.02,900+Math.random()*1600);
+  }
+  if(k==='boo'){
+    osc(145,0,.85,'sawtooth',.11,115);osc(112,.04,.9,'sawtooth',.10,92);noise(.08,.7,.035,400);
+  }
+  if(k==='horn'){
+    osc(466,0,.65,'square',.14);osc(349,0,.65,'square',.14);osc(233,.02,.65,'sawtooth',.08);
+  }
+  if(k==='warning'){
+    for(let i=0;i<3;i++){osc(880,i*.28,.12,'square',.12);osc(660,i*.28+.12,.10,'square',.09)}
+  }
+}
+
+function speak(text){
+  if(!text)return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=.86;u.pitch=.82;u.volume=1;
+  const voices=speechSynthesis.getVoices();
+  const preferred=voices.find(v=>/Samantha|Alex|Daniel|Aaron|Fred/i.test(v.name)&&/^en/i.test(v.lang)) || voices.find(v=>/^en-US/i.test(v.lang)) || voices.find(v=>/^en/i.test(v.lang));
+  if(preferred)u.voice=preferred;
+  speechSynthesis.speak(u);
+}
+
+function showOverlay(big,sub=''){
+  document.getElementById('ovbig').textContent=big;
+  document.getElementById('ovsub').textContent=sub;
+  document.getElementById('overlay').classList.add('show');
+  setTimeout(hideOverlay,2500);
+}
+function hideOverlay(){document.getElementById('overlay').classList.remove('show')}
+function fire(kind,big,sub,voice){
+  play(kind);showOverlay(big,sub);
+  if(voice)setTimeout(()=>speak(voice),kind==='trade'?700:450);
+}
+function customCue(){
+  const h=prompt('Headline?','QB PANIC');if(!h)return;
+  const s=prompt('Subline?','3 QBs in the last 5 picks')||'';
+  play('warning');showOverlay(h,s);setTimeout(()=>speak(h),450);
+}
+</script>
+</body></html>
