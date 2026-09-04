@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#070b12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Draft Room">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Draft Room Soundboard</title>
+<style>
+:root{--bg:#070b12;--panel:#111827;--panel2:#182235;--text:#f8fafc;--muted:#94a3b8;--gold:#f4b942;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}body{min-height:100vh;padding:calc(env(safe-area-inset-top) + 8px) 0 calc(env(safe-area-inset-bottom) + 12px)}.wrap{padding:14px;max-width:760px;margin:0 auto}h1{font-size:29px;margin:2px 0 3px}.sub{color:var(--muted);font-size:13px}.status{display:flex;gap:8px;margin:14px 0 12px}.pill{border:1px solid #334155;background:#0f172a;color:#fff;border-radius:999px;padding:9px 11px;font-size:12px}.section{margin:18px 2px 8px;font-size:12px;font-weight:900;letter-spacing:.13em;color:#cbd5e1;text-transform:uppercase}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{min-height:110px;border:1px solid #334155;border-radius:18px;padding:15px;text-align:left;color:#fff;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 10px 25px rgba(0,0,0,.24)}.btn:active{transform:scale(.985)}.icon{font-size:30px;display:block;margin-bottom:8px}.title{font-weight:950;font-size:18px;display:block}.desc{font-size:12px;color:var(--muted);margin-top:5px;display:block}.gold{border-color:#8a640f}.red{border-color:#7f1d1d}.blue{border-color:#1d4ed8}.purple{border-color:#5b21b6}.full{grid-column:1/-1}.overlay{position:fixed;inset:0;background:rgba(2,6,23,.97);display:none;align-items:center;justify-content:center;text-align:center;padding:24px;z-index:99}.overlay.show{display:flex}.ovsmall{font-size:18px;color:var(--gold);font-weight:950;letter-spacing:.14em}.ovbig{font-size:min(15vw,72px);font-weight:1000;line-height:.96;margin-top:12px}.ovsub{font-size:20px;color:#d1d5db;margin-top:15px}.note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Draft Room Soundboard</h1>
+<div class="sub">Built for iPhone. Tap Enable Audio once, then use it all draft night.</div>
+<div class="status"><button id="enableBtn" class="pill" onclick="enableAudio()">🔊 Enable Audio</button><div class="pill" id="status">Audio locked</div></div>
+<div class="section">Draft events</div>
+<div class="grid">
+<button class="btn gold" onclick="fire('pick','THE PICK IS IN','Draft selection submitted')"><span class="icon">🔔</span><span class="title">Pick Is In</span><span class="desc">Official-style chime</span></button>
+<button class="btn blue" onclick="fire('firstqb','FIRST QB OFF THE BOARD','Quarterback market is officially open')"><span class="icon">🏈</span><span class="title">First QB Taken</span><span class="desc">Use on QB1</span></button>
+<button class="btn purple" onclick="fire('run','QB RUN','Quarterbacks are flying off the board')"><span class="icon">⚡</span><span class="title">QB Run</span></button>
+<button class="btn purple" onclick="fire('run','RB RUN','Running backs are flying off the board')"><span class="icon">⚡</span><span class="title">RB Run</span></button>
+<button class="btn purple" onclick="fire('run','WR RUN','Wide receivers are flying off the board')"><span class="icon">⚡</span><span class="title">WR Run</span></button>
+<button class="btn purple" onclick="fire('run','TE RUN','Tight ends are flying off the board')"><span class="icon">⚡</span><span class="title">TE Run</span></button>
+<button class="btn gold" onclick="fire('round','ROUND COMPLETE','Next round loading')"><span class="icon">🏁</span><span class="title">Round Complete</span></button>
+<button class="btn red" onclick="fire('trade','TRADE ALERT','Breaking news from the war room')"><span class="icon">🚨</span><span class="title">Trade Alert</span></button>
+</div>
+<div class="section">Crowd reactions</div>
+<div class="grid">
+<button class="btn" onclick="fire('applause','APPLAUSE','')"><span class="icon">👏</span><span class="title">Applause</span></button>
+<button class="btn" onclick="fire('boo','BOOOOO','')"><span class="icon">💀</span><span class="title">Boo</span></button>
+<button class="btn" onclick="fire('horn','AIR HORN','')"><span class="icon">📣</span><span class="title">Air Horn</span></button>
+<button class="btn" onclick="fire('warning','CLOCK WARNING','')"><span class="icon">⏰</span><span class="title">Clock Warning</span></button>
+</div>
+<div class="section">Custom cue</div>
+<div class="grid"><button class="btn full" onclick="customCue()"><span class="icon">📰</span><span class="title">Custom War Room Alert</span><span class="desc">Type anything you want</span></button></div>
+<div class="note">Once hosted: Safari → Share → Add to Home Screen.</div>
+</div>
+<div id="overlay" class="overlay" onclick="hideOverlay()"><div><div class="ovsmall">WAR ROOM ALERT</div><div id="ovbig" class="ovbig"></div><div id="ovsub" class="ovsub"></div></div></div>
+<script>
+let ctx=null,enabled=false;
+function enableAudio(){if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume();enabled=true;status.textContent='Audio ready';enableBtn.textContent='✅ Audio Enabled';tone(880,0,.08,'triangle',.09);tone(1175,.09,.13,'triangle',.10)}
+function tone(freq,start,dur,type='sine',gain=.13){if(!enabled)return;const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.0001,ctx.currentTime+start);g.gain.exponentialRampToValueAtTime(gain,ctx.currentTime+start+.01);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+start+dur);o.connect(g).connect(ctx.destination);o.start(ctx.currentTime+start);o.stop(ctx.currentTime+start+dur+.02)}
+function noise(start,dur=.15,gain=.07){if(!enabled)return;const n=Math.floor(ctx.sampleRate*dur),b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();f.type='bandpass';f.frequency.value=1500;s.buffer=b;g.gain.setValueAtTime(gain,ctx.currentTime+start);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+start+dur);s.connect(f).connect(g).connect(ctx.destination);s.start(ctx.currentTime+start)}
+function play(k){if(!enabled){alert('Tap Enable Audio first.');return}if(k==='pick'){tone(784,0,.12,'triangle',.12);tone(1047,.12,.2,'triangle',.16)}if(k==='firstqb'){tone(392,0,.18,'sawtooth',.11);tone(523,.18,.18,'sawtooth',.12);tone(659,.38,.22,'triangle',.14)}if(k==='run'){tone(587,0,.11,'square',.08);tone(740,.10,.11,'square',.08);tone(932,.20,.17,'square',.09)}if(k==='round'){tone(523,0,.12,'triangle',.10);tone(659,.13,.12,'triangle',.11);tone(784,.27,.22,'triangle',.13)}if(k==='trade'){noise(0,.14,.08);tone(220,.04,.18,'sawtooth',.11);tone(196,.24,.18,'sawtooth',.11);tone(247,.44,.22,'sawtooth',.13)}if(k==='applause'){for(let i=0;i<9;i++)noise(i*.07,.12,.045)}if(k==='boo'){tone(140,0,.55,'sawtooth',.12);tone(110,.06,.5,'sawtooth',.10)}if(k==='horn'){tone(466,0,.38,'square',.15);tone(349,0,.38,'square',.15)}if(k==='warning'){tone(880,0,.13,'triangle',.10);tone(880,.20,.13,'triangle',.10)}}
+function showOverlay(big,sub=''){ovbig.textContent=big;ovsub.textContent=sub;overlay.classList.add('show');setTimeout(hideOverlay,2200)}
+function hideOverlay(){overlay.classList.remove('show')}function fire(kind,big,sub){play(kind);showOverlay(big,sub)}
+function customCue(){const h=prompt('Headline?','QB PANIC');if(!h)return;const s=prompt('Subline?','3 QBs in the last 5 picks')||'';play('warning');showOverlay(h,s)}
+if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'))}
+</script></body></html>
